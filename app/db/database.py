@@ -7,7 +7,7 @@ engine = create_engine(settings.DATABASE_URL, echo=True)
 def get_session():
     with Session(engine) as session:
         yield session
-
+#SessionDep = Annotated[Session, Depends(get_session)]
 def init_db():
-    from app.db import models
+    from app.schemas import models
     SQLModel.metadata.create_all(engine)
