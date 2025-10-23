@@ -86,7 +86,7 @@ class Animal(SQLModel, table=True):
     shelter: Shelter = Relationship(back_populates="animals")
     medical_records: list["MedicalRecord"] = Relationship(back_populates="animal")
     vaccinations: list["Vaccination"] = Relationship(back_populates="animal")
-    adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="animals")
+    adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="animal")
 
 class MedicalRecord(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
