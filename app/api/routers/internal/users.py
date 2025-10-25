@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.security import password_hasher
 from app.schemas.models import User
 from app.db.database import SessionDep, get_session
 from app.schemas.schemas import UserCreate, UserRead, UserUpdate
@@ -9,7 +8,7 @@ from app.core.security import get_password_hash, verify_password
 
 router = APIRouter()
 #create user signup
-@router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post("/signup", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def create_user(user_in: UserCreate, session: Session = Depends(get_session)):
     existing_user = session.exec(select(User).where(User.email == user_in.email)).first()
     if existing_user:
