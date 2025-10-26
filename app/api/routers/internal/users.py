@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from app.schemas.models import User
-from app.db.database import SessionDep, get_session
+from app.db.database import  get_session
 from app.schemas.schemas import UserCreate, UserRead, UserUpdate
-from app.core.security import get_password_hash, verify_password
+from app.core.security import get_password_hash
 
 router = APIRouter()
 #create user signup
