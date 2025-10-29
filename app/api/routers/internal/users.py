@@ -3,7 +3,8 @@ from sqlmodel import Session, select
 
 from app.schemas.models import User
 from app.db.database import  get_session
-from app.schemas.schemas import UserCreate, UserRead, UserUpdate
+from app.core.deps import get_current_user
+from app.schemas.schema_user import UserCreate, UserRead, UserUpdate
 from app.core.security import get_password_hash
 
 router = APIRouter()
@@ -26,23 +27,37 @@ def create_user(user_in: UserCreate, session: Session = Depends(get_session)):
 
 #read all users
 @router.get("/",response_model=list[UserRead])
-def get_users(session: Session = Depends(get_session)):
+def get_users(
+        session: Session = Depends(get_session),
+        current_user: User = Depends(get_current_user)
+):
+    """List all users (admin/staff only)."""
+    # later: enforce admin-only
+    # if not current_user.is_admin:
+    #     raise HTTPException(status_code=403, detail="Admins only")
     users = session.exec(select(User)).all()
     return users
 
-#read single user by ID
 @router.get("/{user_id}", response_model=UserRead)
-def get_user(user_id:int, session: Session = Depends(get_session)):
+def get_user(
+        user_id:int,
+        session: Session = Depends(get_session),
+        current_user: User = Depends(get_current_user)
+):
+    """Get a user by ID"""
     user = session.get(User, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    #if not verify_password(password, user.password_hash):
-       # raise HTTPException(status_code=400, detail="Incorrect password")
     return user
 
 #update user
 @router.patch("/{user_id}", response_model=UserRead)
-def update_user(user_id:int, user: UserUpdate, session: Session = Depends(get_session) ):
+def update_user(
+        user_id:int,
+        user: UserUpdate,
+        session: Session = Depends(get_session),
+        current_user: User = Depends(get_current_user)
+):
     user_db = session.get(User, user_id)
     if not user_db:
         raise HTTPException(status_code=404, detail="user not found")
@@ -55,16 +70,20 @@ def update_user(user_id:int, user: UserUpdate, session: Session = Depends(get_se
     session.add(user_db)
     session.commit()
     session.refresh(user_db)
-    return user
+    return user_db
 
 #delete user
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id:int, session: Session = Depends(get_session)):
-    user = session.get(User, user_id)
-    if not user:
+@router.delete("/{user_id}")
+def delete_user(
+        user_id:int,
+        session: Session = Depends(get_session),
+        current_user: User = Depends(get_current_user)
+):
+    user_db = session.get(User, user_id)
+    if not user_db:
         raise HTTPException(status_code=404, detail="user not found")
 
-    session.delete(user)
+    session.delete(user_db)
     session.commit()
     return {"ok": True}
 
