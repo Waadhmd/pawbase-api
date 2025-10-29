@@ -1,23 +1,15 @@
 from datetime import date, datetime, timezone
-from enum import Enum as PyEnum
 from typing import Optional
-
+from app.schemas.enums import AdoptionStatus, RequestStatus
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import ENUM
+from app.schemas.schema_shelter import ShelterBase
+from app.schemas.schema_user import UserBase
+from app.schemas.schema_animal import AnimalBase
+from app.schemas.schema_AdoptionRequest import AdoptionRequestBase
 
-#ENUM DEFINITIONS
-class AdoptionStatus(str, PyEnum):
-    available = "Available"
-    pending = "Pending"
-    adopted = "Adopted"
-    quarantine = "Quarantine"
-
-class RequestStatus(str, PyEnum):
-    submitted = "Submitted"
-    approved = "Approved"
-    rejected = "Rejected"
 
 #helper for enum in PostgreSQl
 def enum_column(enum_class):
@@ -35,14 +27,10 @@ class Organization(SQLModel, table=True):
     shelters: list["Shelter"] = Relationship(back_populates="organization")
 
 
-class Shelter(SQLModel, table=True):
+class Shelter(ShelterBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     organization_id: int = Field(foreign_key="organization.id")
     name: str = Field(index=True)
-    city: Optional[str]
-    address: Optional[str]
-    phone: Optional[str]
-    contact_email: Optional[str]
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     organization: Organization = Relationship(back_populates="shelters")
@@ -50,11 +38,10 @@ class Shelter(SQLModel, table=True):
     staff_memberships: list["Staff"] = Relationship(back_populates="shelter")
     adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="shelter")
 
-class User(SQLModel, table=True):
+class User(UserBase, table=True):
     id:Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True)
     password_hash: str
-    avatar_url: Optional[str] = None
     created_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
     managed_organization: Optional[Organization] = Relationship(back_populates="admin_user")
@@ -70,17 +57,10 @@ class Staff(SQLModel, table=True):
     user: User = Relationship(back_populates="staff_users")
     shelter : Shelter = Relationship(back_populates="staff_memberships")
 
-class Animal(SQLModel, table=True):
+class Animal(AnimalBase, table=True):
     id:Optional[int] = Field(default=None, primary_key=True)
-    breed_name: str
-    species_name: str
     shelter_id:int = Field(foreign_key="shelter.id")
-    name: str
     status: AdoptionStatus = Field(sa_column=enum_column(AdoptionStatus))
-    date_of_birth: Optional[date] = None
-    weight: Optional[float] = None
-    is_neutered: bool
-    public_description: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda :datetime.now(timezone.utc))
 
     shelter: Shelter = Relationship(back_populates="animals")
@@ -111,14 +91,13 @@ class Vaccination(SQLModel, table=True):
     animal: Animal = Relationship(back_populates="vaccinations")
     staff_user: User = Relationship(back_populates="vaccinations")
 
-class AdoptionRequest(SQLModel, table=True):
+class AdoptionRequest(AdoptionRequestBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     animal_id: int = Field(foreign_key="animal.id")
     adopter_user_id: int = Field(foreign_key="user.id")
     shelter_id: int = Field(foreign_key="shelter.id")
     status: RequestStatus = Field(sa_column=enum_column(RequestStatus))
     request_date: datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
-    staff_notes: Optional[str] = None
 
     animal: Animal = Relationship(back_populates="adoption_requests")
     shelter : "Shelter" = Relationship(back_populates="adoption_requests")
