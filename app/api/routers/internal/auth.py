@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 from app.core.config import settings
 from app.db.database import get_session
 from app.schemas.models import User
-from app.schemas.schemas import UserRead
+from app.schemas.schema_user import UserRead
 from app.schemas.schema_auth import Token
 from app.core.security import verify_password
 from app.core.jwt import create_access_token
