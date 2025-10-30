@@ -3,9 +3,9 @@ from enum import Enum as PyEnum
 #ENUM DEFINITIONS
 class UserRole(str, PyEnum):
     #SYSTEM_ADMIN = "system_admin"
-    ORG_ADMIN = "org_admin"
-    STAFF = "staff"
-    ADOPTER = "adopter"
+    org_admin = "org_admin"
+    staff = "staff"
+    adopter = "adopter"
 
 class AdoptionStatus(str, PyEnum):
     available = "Available"

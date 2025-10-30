@@ -18,6 +18,7 @@ def create_user(user_in: UserCreate, session: Session = Depends(get_session)):
     user = User(
         email=user_in.email,
         password=get_password_hash(user_in.password),
+        role=user_in.role,
         avatar_url=user_in.avatar_url
     )
     session.add(user)
