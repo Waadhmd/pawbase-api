@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 from typing import Optional
-from app.schemas.enums import AdoptionStatus, RequestStatus
+from app.schemas.enums import AdoptionStatus, RequestStatus, UserRole
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column
@@ -36,12 +36,13 @@ class Shelter(ShelterBase, table=True):
     organization: Organization = Relationship(back_populates="shelters")
     animals : list["Animal"] = Relationship(back_populates="shelter")
     staff_memberships: list["Staff"] = Relationship(back_populates="shelter")
-    adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="shelter")
+    #adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="shelter")
 
 class User(UserBase, table=True):
     id:Optional[int] = Field(default=None, primary_key=True)
     email: str = Field(unique=True)
-    password_hash: str
+    password: str
+    role: UserRole = Field(sa_column=enum_column(UserRole))
     created_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
     managed_organization: Optional[Organization] = Relationship(back_populates="admin_user")
@@ -95,12 +96,11 @@ class AdoptionRequest(AdoptionRequestBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     animal_id: int = Field(foreign_key="animal.id")
     adopter_user_id: int = Field(foreign_key="user.id")
-    shelter_id: int = Field(foreign_key="shelter.id")
     status: RequestStatus = Field(sa_column=enum_column(RequestStatus))
     request_date: datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
     animal: Animal = Relationship(back_populates="adoption_requests")
-    shelter : "Shelter" = Relationship(back_populates="adoption_requests")
+    adopter_user: "User" = Relationship()
 
 
 

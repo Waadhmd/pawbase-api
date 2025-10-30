@@ -17,7 +17,7 @@ def create_user(user_in: UserCreate, session: Session = Depends(get_session)):
 
     user = User(
         email=user_in.email,
-        password_hash=get_password_hash(user_in.password),
+        password=get_password_hash(user_in.password),
         avatar_url=user_in.avatar_url
     )
     session.add(user)
@@ -64,7 +64,7 @@ def update_user(
 
     user_data = user.model_dump(exclude_unset=True)
     if "password" in user_data:
-        user_data["password_hash"] = get_password_hash(user_data.pop("password"))
+        user_data["password"] = get_password_hash(user_data.pop("password"))
 
     user_db.sqlmodel_update(user_data)
     session.add(user_db)

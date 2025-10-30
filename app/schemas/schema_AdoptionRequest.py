@@ -12,7 +12,6 @@ class AdoptionRequestBase(SQLModel):
     adopter_user_id: int
     status: RequestStatus = RequestStatus.submitted
     staff_notes: Optional[str] = None
-    shelter_id: Optional[int] = None
 
 class AdoptionRequestCreate(AdoptionRequestBase):
     pass
