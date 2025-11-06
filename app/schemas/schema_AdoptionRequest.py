@@ -9,7 +9,6 @@ from app.schemas.enums import  RequestStatus
 
 class AdoptionRequestBase(SQLModel):
     animal_id: int
-    adopter_user_id: int
     status: RequestStatus = RequestStatus.submitted
     staff_notes: Optional[str] = None
 
@@ -18,6 +17,7 @@ class AdoptionRequestCreate(AdoptionRequestBase):
 
 class AdoptionRequestRead(AdoptionRequestBase):
     id: int
+    adopter_user_id: int
     request_date: datetime
 
 class AdoptionRequestUpdate(AdoptionRequestBase):
