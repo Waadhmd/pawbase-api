@@ -23,8 +23,8 @@ class Organization(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     #Python side Relationship
-    admin_user: "User" = Relationship(back_populates="managed_organization")
-    shelters: list["Shelter"] = Relationship(back_populates="organization")
+    admin_user: "User" = Relationship(back_populates="managed_organization", cascade_delete=True)
+    shelters: list["Shelter"] = Relationship(back_populates="organization", cascade_delete=True)
 
 
 class Shelter(ShelterBase, table=True):
@@ -34,8 +34,8 @@ class Shelter(ShelterBase, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     organization: Organization = Relationship(back_populates="shelters")
-    animals : list["Animal"] = Relationship(back_populates="shelter")
-    staff_memberships: list["Staff"] = Relationship(back_populates="shelter")
+    animals : list["Animal"] = Relationship(back_populates="shelter", cascade_delete=True)
+    staff_memberships: list["Staff"] = Relationship(back_populates="shelter", cascade_delete=True)
     #adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="shelter")
 
 class User(UserBase, table=True):
@@ -46,7 +46,7 @@ class User(UserBase, table=True):
     created_at:datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
     managed_organization: Optional[Organization] = Relationship(back_populates="admin_user")
-    staff_users: list["Staff"] = Relationship(back_populates="user")
+    staff_users: list["Staff"] = Relationship(back_populates="user", cascade_delete=True)
     medical_records: list["MedicalRecord"] = Relationship(back_populates="staff_user")
     vaccinations: list["Vaccination"] = Relationship(back_populates="staff_user")
 
@@ -65,42 +65,42 @@ class Animal(AnimalBase, table=True):
     created_at: datetime = Field(default_factory=lambda :datetime.now(timezone.utc))
 
     shelter: Shelter = Relationship(back_populates="animals")
-    medical_records: list["MedicalRecord"] = Relationship(back_populates="animal")
-    vaccinations: list["Vaccination"] = Relationship(back_populates="animal")
-    adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="animal")
+    medical_records: list["MedicalRecord"] = Relationship(back_populates="animal", cascade_delete=True)
+    vaccinations: list["Vaccination"] = Relationship(back_populates="animal", cascade_delete=True)
+    adoption_requests: list["AdoptionRequest"] = Relationship(back_populates="animal", cascade_delete=True)
 
 class MedicalRecord(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     animal_id: int = Field(foreign_key="animal.id")
-    staff_user_id: int = Field(foreign_key="user.id")
+    staff_user_id: Optional[int] = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     vet_notes: Optional[str] = None
     exam_date: date
     condition: Optional[str] = None
 
     animal: Animal = Relationship(back_populates="medical_records")
-    staff_user: User = Relationship(back_populates="medical_records")
+    staff_user: Optional[User] = Relationship(back_populates="medical_records")
 
 class Vaccination(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     animal_id: int = Field(foreign_key="animal.id")
-    staff_user_id: int = Field(foreign_key="user.id")
+    staff_user_id: Optional[int] = Field(default=None, foreign_key="user.id", ondelete="SET NULL")
     vaccine_type: str
     vaccination_date: date
     valid_until: date
     notes: Optional[str] = None
 
     animal: Animal = Relationship(back_populates="vaccinations")
-    staff_user: User = Relationship(back_populates="vaccinations")
+    staff_user: Optional["User"] = Relationship(back_populates="vaccinations")
 
 class AdoptionRequest(AdoptionRequestBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     animal_id: int = Field(foreign_key="animal.id")
-    adopter_user_id: int = Field(foreign_key="user.id")
+    adopter_user_id: Optional[int] = Field(foreign_key="user.id", ondelete="SET NULL")
     status: RequestStatus = Field(sa_column=enum_column(RequestStatus))
     request_date: datetime = Field(default_factory=lambda : datetime.now(timezone.utc))
 
     animal: Animal = Relationship(back_populates="adoption_requests")
-    adopter_user: "User" = Relationship()
+    adopter_user: Optional["User"] = Relationship()
 
 
 
