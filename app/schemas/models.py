@@ -23,7 +23,7 @@ class Organization(SQLModel, table=True):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     #Python side Relationship
-    admin_user: "User" = Relationship(back_populates="managed_organization", cascade_delete=True)
+    admin_user: "User" = Relationship(back_populates="managed_organization")
     shelters: list["Shelter"] = Relationship(back_populates="organization", cascade_delete=True)
 
 

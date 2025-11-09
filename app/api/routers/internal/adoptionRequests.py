@@ -32,7 +32,6 @@ def create_adoption_request(
     request = AdoptionRequest(
         animal_id=request_in.animal_id,
         adopter_user_id= current_user.id,
-        shelter_id=request_in.shelter_id,
         status=request_in.status,
         staff_notes=request_in.staff_notes,
     )
@@ -93,7 +92,7 @@ def update_adoption_request(
         setattr(request_db, key, value)
 
     if "status" in update_data and update_data["status"] != old_status:
-        animal_db = session.get(Animal, AdoptionRequest.animal_id)
+        animal_db = session.get(Animal, request_db.animal_id)
         if not animal_db:
             raise  HTTPException(status_code=404, detail="Animal not found")
         if update_data["status"] == 'Approved':
