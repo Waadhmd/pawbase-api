@@ -77,7 +77,7 @@ def read_animal_profile(
         vaccinations= [
             {"vaccine_type": vaccination.vaccine_type,
              "vaccination_date": vaccination.vaccination_date,
-             "vet_notes": vaccination.vet_notes
+             "valid_until": vaccination.valid_until
             }
             for vaccination in vaccinations_db
         ],
