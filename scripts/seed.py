@@ -16,11 +16,12 @@ from app.schemas.models import (
 )
 from app.schemas.enums import UserRole, AdoptionStatus, RequestStatus
 from app.core.security import get_password_hash
+from app.core.config import settings
 
 fake = Faker()
 
 # --- DATABASE SETUP ---
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://pawbase_api_user:xtvnfXWqOT7c3yvJ1uIMWzwQs6dPqqR4@dpg-d48qrammcj7s73e4erp0-a.frankfurt-postgres.render.com/pawbase_api")
+DATABASE_URL = os.getenv("DATABASE_URL", settings.DATABASE_URL)
 engine = create_engine(DATABASE_URL, echo=True)
 
 # --- ENVIRONMENT CHECK ---
