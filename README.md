@@ -69,16 +69,48 @@ Example response:
 }
 ```
 #### 🧪 Setup Instructions
-1️- Clone the repository
-git clone https://github.com/Waadhmd/pawbase-api.git
-2️- Create and configure .env
+1. **Clone the repository**
+ ```bash
+   git clone https://github.com/Waadhmd/pawbase-api.git
+ ```
+
+
+2. Create and configure .env
+
  DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/pawbase
  SECRET_KEY=your_secret_key
-3️- Install dependencies
-4️- Run database migrations
- alembic upgrade head
-5️- Start the application
+
+3. Install dependencies
+
+4. Run database migrations
+```bash
+alembic upgrade head
+```
+
+5. Start the application
+```bash
  uvicorn app.main:app --reload
+```
+
+🌱 Database Seeding
+
+To populate the database with realistic fake data:
+Run the seed script (development only)
+
+```bash
+ python scripts/seed.py
+```
+The seed script automatically prevents execution in production:
+
+🛑 Notes
+
+# Seeding is safe to leave in your repository — it will not run automatically anywhere.
+
+# Production environments (Render, Railway, etc.) will not run seed.py unless manually triggered.
+
+# The seeder is designed for development, testing, and analytics simulations.
+
+
 
 ####  Future Roadmap (v2)
 | Feature                | Description                                                  |

@@ -1,3 +1,4 @@
+faker
 sqlmodel
 fastapi[standard]
 pydantic>=2.0
