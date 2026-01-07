@@ -34,7 +34,7 @@ if ENV == "production":
 # ------------------------------
 # ----- SEED FUNCTIONS ----------
 # ------------------------------
-def create_organizations(session, n=3):
+def create_organizations(session, n=2):
     orgs = []
     for _ in range(n):
         admin_user = User(
