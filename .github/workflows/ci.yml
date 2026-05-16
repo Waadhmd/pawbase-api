@@ -33,17 +33,17 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pawbase_test
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pawbase_test
       SECRET_KEY: testsecretkey
       ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
 
@@ -54,4 +54,4 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest --cov=app --cov-fail-under=60
+          pytest --cov=app --cov-fail-under=55

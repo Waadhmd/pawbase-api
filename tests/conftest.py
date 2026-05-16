@@ -5,9 +5,14 @@ from main import app
 from app.schemas.models import User
 from app.db.database import get_session
 from app.core.security import get_password_hash
+import os
 
 
-DATABASE_URL="postgresql+psycopg2://postgres:post1234waad@localhost:5433/pawbase_test"
+#DATABASE_URL="postgresql+psycopg2://postgres:post1234waad@localhost:5432/pawbase_test"
+DATABASE_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+psycopg2://postgres:post1234waad@localhost:5433/pawbase_test"
+)
 
 
 engine = create_engine(DATABASE_URL,echo=False)
